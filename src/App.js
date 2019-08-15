@@ -1,26 +1,43 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { SearchBar } from './Components/searchbar/searchbar.component'
+import { CardList } from './Components/cardlist/cardlist.component'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      users: [],
+      searchField: ''
+    }
+
+    // this.handleChange = this.handleChange.bind(this) //sets the context of 'this' for the function
+
+  }
+
+  handleChange = (e) => {
+    this.setState({ searchField: e.target.value })
+  }
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => res.json()
+        .then(usrs => { this.setState({ users: usrs }) }))
+  }
+
+  render() {
+    const { users, searchField } = this.state;
+    const filteredUsers = users.filter(user => 
+      user.name.toLowerCase().includes(searchField.toLowerCase())
+    )
+    return (
+      <div className="App">
+       <SearchBar 
+       placeholder="Search Users"
+       handleChange={this.handleChange}/>
+        <CardList users={filteredUsers} />
+      </div>
+    );
+  }
 }
 
 export default App;
